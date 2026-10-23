@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3f6f8">
+  <title>Helpsy — apoio psicológico acessível</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f3f6f8; --surface: #fff; --text: #16223b; --muted: #55627a;
+      --line: #d8e0e8; --accent: #4b52d6; --accent-soft: #e7e9fb;
+      --sun: #f3c14b; --good: #1f7a4d; --good-soft: #e1f3e9;
+      --warning-soft: #fbf0d6; --radius: 16px;
+      --display: "Bricolage Grotesque", system-ui, sans-serif;
+      --body: "Figtree", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 var(--body); }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--accent); outline-offset: 2px;
+    }
+    .wrap { width: min(1080px, calc(100% - 32px)); margin-inline: auto; }
+    .demo { background: var(--text); color: white; padding: 8px 0; font-size: .86rem; }
+    .demo-inner, .top, .row, .nav, .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .demo-inner { justify-content: space-between; }
+    .demo button, .nav button { border: 1px solid transparent; border-radius: 999px; padding: 6px 12px; background: transparent; color: inherit; }
+    .demo button[aria-pressed="true"] { background: var(--sun); color: #3b2b00; }
+    .top { justify-content: space-between; padding: 18px 0; }
+    .logo { border: 0; background: none; padding: 0; color: var(--text); font: 700 1.6rem var(--display); }
+    .nav button { color: var(--muted); }
+    .nav button[aria-current="page"] { background: var(--accent-soft); color: var(--text); }
+    .emergency { padding: 12px 16px; background: var(--warning-soft); border-radius: 12px; margin-bottom: 20px; }
+    h1, h2, h3 { font-family: var(--display); line-height: 1.15; margin: 0; }
+    h1 { font-size: clamp(2rem, 5vw, 3.4rem); }
+    h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+    h3 { font-size: 1.15rem; }
+    p { margin: 0; }
+    .muted, .hint { color: var(--muted); }
+    .hint, .small { font-size: .88rem; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .09em; font-size: .78rem; font-weight: 700; color: var(--muted); }
+    .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: center; padding: 32px 0 48px; }
+    .hero p.lead { margin-top: 16px; font-size: 1.15rem; color: var(--muted); }
+    .hero .actions { margin-top: 24px; }
+    .highlight { background: linear-gradient(transparent 62%, var(--sun) 62%); }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+    .stack { display: grid; gap: 16px; }
+    .grid2, .grid3, .filters, .kpis { display: grid; gap: 16px; }
+    .grid2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+    .grid3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+    .filters { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    .kpis { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+    .block { padding: 36px 0; border-top: 1px solid var(--line); }
+    .block h2 { margin-bottom: 18px; }
+    .btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 10px 17px; border: 1.5px solid var(--accent); border-radius: 999px; background: var(--accent); color: white; font-weight: 700; text-decoration: none; }
+    .btn.secondary { background: transparent; color: var(--text); border-color: var(--line); }
+    .btn.sun { background: var(--sun); border-color: var(--sun); color: #3b2b00; }
+    .btn.small { padding: 6px 12px; font-size: .88rem; }
+    .btn.danger { background: transparent; border-color: #b3261e; color: #b3261e; }
+    .page { padding: 10px 0 42px; display: grid; gap: 20px; }
+    .page-head { display: grid; gap: 7px; }
+    .field { display: grid; gap: 5px; min-width: 0; }
+    .field label { font-weight: 700; font-size: .9rem; }
+    .field input, .field select, .field textarea { width: 100%; min-width: 0; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: white; color: var(--text); }
+    .checks { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    .checks label { display: flex; align-items: center; gap: 7px; font-weight: 400; }
+    .notice { padding: 12px 14px; border-radius: 10px; background: var(--accent-soft); }
+    .notice.good { background: var(--good-soft); }
+    .notice.error { background: #fbe4e2; color: #8f1d18; }
+    .chip, .pill { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: .8rem; font-weight: 700; }
+    .chip { background: var(--accent-soft); font-weight: 500; }
+    .pill.free { background: var(--good-soft); color: var(--good); }
+    .professional { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; }
+    .avatar { display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 50%; color: white; background: var(--accent); font: 700 1.2rem var(--display); }
+    .avatar.large { width: 76px; height: 76px; font-size: 1.7rem; }
+    .meta, .slots { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+    .slot { padding: 7px 10px; border: 1.5px solid var(--line); border-radius: 10px; background: white; color: var(--text); }
+    .slot[aria-pressed="true"], .slot.selected { background: var(--accent); border-color: var(--accent); color: white; }
+    .slot.unavailable { opacity: .45; text-decoration: line-through; cursor: not-allowed; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 18px; align-items: start; }
+    .summary { position: sticky; top: 16px; }
+    .days { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px; }
+    .day h4 { margin: 0 0 8px; font-size: .88rem; }
+    .day .stack { gap: 6px; }
+    .list { display: grid; gap: 10px; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px; }
+    .kpi b { display: block; font: 700 2rem/1.1 var(--display); }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .footer { border-top: 1px solid var(--line); margin-top: 20px; padding: 28px 0 80px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
+    .footer button { border: 0; background: none; padding: 0; color: var(--text); text-decoration: underline; }
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--text); color: white; padding: 10px 18px; border-radius: 999px; z-index: 20; max-width: calc(100% - 32px); }
+    .fab { position: fixed; right: 16px; bottom: 16px; z-index: 30; }
+    .chat { position: fixed; right: 16px; bottom: 16px; z-index: 40; width: min(390px, calc(100vw - 32px)); height: min(590px, calc(100dvh - 32px)); display: flex; flex-direction: column; overflow: hidden; background: white; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 14px 44px #141e4630; }
+    .chat-head { padding: 13px 16px; display: flex; justify-content: space-between; align-items: center; background: var(--accent-soft); }
+    .messages { flex: 1; overflow: auto; display: grid; align-content: start; gap: 10px; padding: 14px; }
+    .message { max-width: 92%; padding: 10px 13px; border-radius: 14px; background: var(--bg); font-size: .94rem; }
+    .message.me { justify-self: end; background: var(--accent); color: white; }
+    .chat form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--line); }
+    .chat form input { min-width: 0; flex: 1; border: 1px solid var(--line); border-radius: 999px; padding: 9px 12px; }
+    @media (max-width: 800px) { .hero, .layout { grid-template-columns: 1fr; } .summary { position: static; } }
+    @media (max-width: 480px) { .professional { grid-template-columns: 1fr; } .top { align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="demo"><div class="wrap demo-inner"><strong>Modo demonstração</strong><div class="row" id="demoRoles" aria-label="Trocar perfil"></div></div></div>
+  <div class="wrap">
+    <header class="top">
+      <button class="logo" data-action="go" data-view="home" aria-label="Helpsy — início">◒ Helpsy</button>
+      <nav class="nav" id="mainNav" aria-label="Navegação principal"></nav>
+    </header>
+    <aside class="emergency"><strong>Importante:</strong> o Helpsy não é um serviço de emergência. Em uma crise, procure um adulto de confiança. No Brasil, o CVV atende pelo 188 e emergências médicas pelo SAMU, 192.</aside>
+    <main id="app" tabindex="-1"></main>
+    <footer class="footer">
+      <div><strong style="font-family:var(--display)">Helpsy</strong><p class="small muted">Protótipo acadêmico. Os profissionais e horários são fictícios.</p></div>
+      <div class="row"><button data-action="info" data-tab="privacidade">Privacidade</button><button data-action="info" data-tab="termos">Termos de uso</button><button data-action="info" data-tab="faq">Perguntas frequentes</button></div>
+    </footer>
+  </div>
+  <div id="chatRoot"></div>
+  <div id="toastRoot" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  // Dados fictícios para demonstração. Todas as consultas custam R$ 0,00.
+  const professionals = [
+    { id: 1, title: "Dra.", name: "Marina Teixeira", crp: "CRP demonstrativo 00/00001", training: "Terapia Cognitivo-Comportamental", areas: ["Ansiedade", "Estresse escolar"], modes: ["online"], location: "", bio: "Acompanho estudantes que sentem pressão com provas, notas e escolhas, com escuta acolhedora e sem julgamentos.", days: [1,2,3,4,5], times: ["09:00","10:00","14:00","15:00"] },
+    { id: 2, title: "Dr.", name: "Rafael Almeida", crp: "CRP demonstrativo 00/00002", training: "Orientação profissional", areas: ["Orientação vocacional", "Atenção e estudos"], modes: ["presencial"], location: "Centro (local demonstrativo)", bio: "Ajudo adolescentes a organizar interesses, rotina de estudos e decisões sobre curso e carreira.", days: [1,3,5], times: ["13:00","14:00","15:00","16:00"] },
+    { id: 3, title: "Dra.", name: "Beatriz Nogueira", crp: "CRP demonstrativo 00/00003", training: "Psicologia Clínica", areas: ["Luto", "Autoestima"], modes: ["online","presencial"], location: "Zona Sul (local demonstrativo)", bio: "Atendimento acolhedor para quem passou por perdas ou está buscando apoio para lidar com mudanças.", days: [2,4], times: ["18:00","19:00","20:00"] },
+    { id: 4, title: "Dr.", name: "Caio Mendes", crp: "CRP demonstrativo 00/00004", training: "Neuropsicologia", areas: ["Atenção e estudos", "Estresse escolar"], modes: ["online"], location: "", bio: "Foco em concentração, organização e rotina de estudos, respeitando o ritmo de cada pessoa.", days: [1,2,3,4,5], times: ["08:00","09:00","10:00","11:00"] },
+    { id: 5, title: "Dra.", name: "Larissa Prado", crp: "CRP demonstrativo 00/00005", training: "Psicologia Escolar", areas: ["Bullying e convivência", "Autoestima"], modes: ["online"], location: "", bio: "Apoio para questões de convivência escolar, amizades e situações de bullying.", days: [2,3,4], times: ["15:00","16:00","17:00","18:00"] },
+    { id: 6, title: "Dra.", name: "Helena Ribeiro", crp: "CRP demonstrativo 00/00006", training: "Psicologia de crianças e adolescentes", areas: ["Ansiedade", "Bullying e convivência"], modes: ["presencial"], location: "Centro (local demonstrativo)", bio: "Atendimento de crianças e adolescentes, com participação de responsáveis quando necessário.", days: [1,2,4], times: ["08:00","09:00","10:00"] }
+  ];
+
+  const areas = ["Ansiedade","Autoestima","Atenção e estudos","Bullying e convivência","Estresse escolar","Luto","Orientação vocacional"];
+  const state = {
+    view: "home", role: null, name: "Aluno(a)",
+    filters: { mode: "", period: "", area: "" },
+    selectedProfessional: null, selectedSlot: null, bookingMessage: "",
+    bookings: [], blocked: new Set(), notifications: [
+      { text: "Bem-vindo ao Helpsy. Escolha um profissional para ver os horários disponíveis.", read: false }
+    ],
+    audit: [], pending: [
+      { name: "Paulo Siqueira", crp: "CRP demonstrativo 00/00007", date: "21/10/2026" },
+      { name: "Joana Farias", crp: "CRP demonstrativo 00/00008", date: "22/10/2026" }
+    ],
+    chatOpen: false, messages: [], pendingBooking: null, nextId: 100
+  };
+
+  const $ = (selector) => document.querySelector(selector);
+  const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[char]));
+  const professionalById = (id) => professionals.find((person) => person.id === Number(id));
+  const money = () => "Gratuito — R$ 0,00";
+  const modeLabel = (mode) => mode === "online" ? "On-line" : "Presencial";
+  const dateISO = (date) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+  const nextWeekdays = () => {
+    const days = []; const date = new Date(); date.setHours(12,0,0,0);
+    while (days.length < 7) {
+      date.setDate(date.getDate()+1);
+      if (date.getDay() >= 1 && date.getDay() <= 5) days.push(new Date(date));
+    }
+    return days;
+  };
+  const dates = nextWeekdays();
+  const dateLabel = (iso) => {
+    const [year, month, day] = iso.split("-").map(Number);
+    return new Date(year, month-1, day, 12).toLocaleDateString("pt-BR", { weekday:"short", day:"2-digit", month:"short" }).replace(".","");
+  };
+  const periodOf = (time) => {
+    const hour = Number(time.split(":")[0]);
+    return hour < 12 ? "manha" : hour < 18 ? "tarde" : "noite";
+  };
+  const slotsFor = (person) => dates
+    .filter((date) => person.days.includes(date.getDay()))
+    .flatMap((date) => person.times.map((time) => ({ date: dateISO(date), time })));
+  const slotKey = (personId, date, time) => `${personId}|${date}|${time}`;
+  const isTaken = (personId, date, time) => state.bookings.some((booking) =>
+    booking.professionalId === personId && booking.date === date && booking.time === time && booking.status !== "cancelada"
+  );
+  const isFree = (personId, date, time) => !isTaken(personId,date,time) && !state.blocked.has(slotKey(personId,date,time));
+  const availableSlots = (person, period = "") => slotsFor(person).filter((slot) =>
+    isFree(person.id,slot.date,slot.time) && (!period || periodOf(slot.time) === period)
+  );
+
+  // Reserva horários fictícios de terceiros para a demonstração não parecer vazia.
+  professionals.forEach((person) => slotsFor(person).forEach((slot, index) => {
+    if ((index * 7 + person.id * 3) % 5 === 0) state.bookings.push({
+      id: `sample-${person.id}-${index}`, professionalId: person.id, date: slot.date,
+      time: slot.time, mode: person.modes[0], status: "confirmada", owner: "other"
+    });
+  }));
+
+  function addNotification(text) { state.notifications.unshift({ text, read: false }); }
+  function reserveSlot(professionalId, date, time, mode) {
+    if (!isFree(professionalId,date,time)) {
+      return { ok:false, message:"Esse horário não está mais disponível. Escolha outro horário." };
+    }
+    const booking = {
+      id: `booking-${state.nextId++}`, professionalId, date, time, mode,
+      status:"confirmada", owner:"me"
+    };
+    state.bookings.push(booking);
+    const person = professionalById(professionalId);
+    addNotification(`Consulta gratuita confirmada com ${person.title} ${person.name}, ${dateLabel(date)} às ${time}.`);
+    return { ok:true, booking };
+  }
+
+  function avatar(person, large = false) {
+    const initials = person.name.split(" ").filter(Boolean).slice(0,2).map((part) => part[0]).join("");
+    return `<div class="avatar ${large ? "large" : ""}" aria-hidden="true">${escapeHTML(initials)}</div>`;
+  }
+  function button(label, action, data = {}, classes = "btn") {
+    const attrs = Object.entries(data).map(([key,value]) => `data-${key}="${escapeHTML(value)}"`).join(" ");
+    return `<button class="${classes}" data-action="${action}" ${attrs}>${label}</button>`;
+  }
+  function roleTabs() {
+    const roles = [[null,"Visitante"],["aluno","Aluno"],["psi","Psicólogo"],["admin","Administrador"]];
+    $("#demoRoles").innerHTML = roles.map(([role,label]) =>
+      `<button data-action="role" data-role="${role || ""}" aria-pressed="${state.role === role}">${label}</button>`
+    ).join("");
+  }
+  function navItems() {
+    if (state.role === "aluno") return [["student-home","Início"],["catalog","Psicólogos"],["appointments","Minhas consultas"],["notifications","Avisos"]];
+    if (state.role === "psi") return [["psych-home","Resumo"],["psych-agenda","Agenda"]];
+    if (state.role === "admin") return [["admin","Painel"]];
+    return [["home","Início"],["student-register","Sou aluno"],["psych-register","Sou psicólogo"],["info","Ajuda"]];
+  }
+
+  const views = {};
+  views.home = () => `
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Psicologia mais acessível para estudantes</p>
+        <h1>Pedir ajuda fica mais fácil quando o <span class="highlight">caminho</span> está claro.</h1>
+        <p class="lead">O Helpsy aproxima estudantes de profissionais de psicologia e facilita a busca por horários e o agendamento de consultas gratuitas.</p>
+        <div class="actions">${button("Sou aluno","go",{view:"student-register"})}${button("Sou psicólogo","go",{view:"psych-register"},"btn secondary")}</div>
+        <p class="hint" style="margin-top:12px">Todas as consultas deste protótipo são gratuitas. No lançamento real, a gratuidade dependerá de parcerias e disponibilidade de profissionais.</p>
+      </div>
+      <div class="card stack">
+        <div class="row" style="justify-content:space-between"><h3>Conheça os profissionais</h3><span class="pill free">100% gratuito</span></div>
+        ${professionals.slice(0,3).map((person) => `<div class="row">${avatar(person)}<div style="flex:1"><strong>${person.title} ${person.name}</strong><p class="small muted">${person.areas.join(" · ")}</p></div><span class="pill free">R$ 0,00</span></div>`).join("")}
+        ${button("Ver profissionais","go",{view:"catalog"})}
+      </div>
+    </section>
+    <section class="block"><h2>Como funciona</h2><div class="grid3">
+      <article class="card stack"><span class="eyebrow">Etapa 1</span><h3>Crie sua conta</h3><p class="muted">Informe os dados necessários para criar seu acesso. Menores de idade precisam seguir as regras de consentimento aplicáveis.</p></article>
+      <article class="card stack"><span class="eyebrow">Etapa 2</span><h3>Encontre apoio</h3><p class="muted">Filtre por modalidade, período e tema para encontrar um profissional adequado.</p></article>
+      <article class="card stack"><span class="eyebrow">Etapa 3</span><h3>Agende gratuitamente</h3><p class="muted">Escolha um horário livre, confira o resumo e confirme a reserva.</p></article>
+    </div></section>
+    <section class="block"><h2>Nosso compromisso</h2><div class="grid3">
+      <article class="card"><h3>Acesso gratuito</h3><p class="muted" style="margin-top:8px">A proposta do Helpsy é conectar alunos a consultas sem cobrança, por meio de profissionais e parcerias.</p></article>
+      <article class="card"><h3>Privacidade</h3><p class="muted" style="margin-top:8px">Um sistema real deve coletar somente os dados necessários, proteger informações sensíveis e explicar quem pode acessá-las.</p></article>
+      <article class="card"><h3>Assistente virtual</h3><p class="muted" style="margin-top:8px">A assistente ajuda a encontrar horários e navegar no site. Não faz diagnóstico nem substitui atendimento profissional.</p></article>
+    </div></section>`;
+
+  views["student-register"] = () => `
+    <section class="page" style="max-width:680px;margin:auto">
+      <header class="page-head"><p class="eyebrow">Cadastro de aluno</p><h1 style="font-size:2.2rem">Crie sua conta</h1><p class="muted">Você não precisa compartilhar detalhes íntimos para fazer o cadastro.</p></header>
+      <form id="studentForm" class="card stack" novalidate>
+        <div class="field"><label for="studentName">Nome completo</label><input id="studentName" required autocomplete="name"></div>
+        <div class="field"><label for="studentBirth">Data de nascimento</label><input id="studentBirth" type="date" required></div>
+        <div class="field"><label for="studentEmail">E-mail</label><input id="studentEmail" type="email" required autocomplete="email"></div>
+        <div class="field"><label for="studentPassword">Senha (mínimo 8 caracteres)</label><input id="studentPassword" type="password" minlength="8" required autocomplete="new-password"></div>
+        <p id="studentError" class="notice error" hidden></p>
+        <label class="checks"><input id="studentTerms" type="checkbox" required> Li e aceito os termos de uso e o aviso de privacidade.</label>
+        <button class="btn" type="submit">Criar conta demonstrativa</button>
+        <p class="hint">Protótipo local: não cria conta real, não envia e-mail e não armazena os dados em servidor.</p>
+      </form>
+    </section>`;
+
+  views["psych-register"] = () => `
+    <section class="page" style="max-width:720px;margin:auto">
+      <header class="page-head"><p class="eyebrow">Cadastro profissional</p><h1 style="font-size:2.2rem">Cadastre seu perfil</h1><p class="muted">O perfil de um sistema real só deve ser publicado depois da validação profissional.</p></header>
+      <form id="psychForm" class="card stack">
+        <div class="grid2"><div class="field"><label for="psychName">Nome completo</label><input id="psychName" required></div><div class="field"><label for="psychCrp">CRP (registro profissional)</label><input id="psychCrp" required></div></div>
+        <div class="field"><label for="psychEmail">E-mail profissional</label><input id="psychEmail" type="email" required></div>
+        <div class="field"><label for="psychTraining">Formação e especializações</label><input id="psychTraining" required></div>
+        <div class="field"><label for="psychAreas">Áreas de atuação</label><input id="psychAreas" placeholder="Ex.: ansiedade, luto, estudos"></div>
+        <div class="field"><label for="psychBio">Apresentação profissional</label><textarea id="psychBio" rows="3"></textarea></div>
+        <p id="psychError" class="notice error" hidden></p><button class="btn" type="submit">Enviar para análise</button>
+      </form>
+    </section>`;
+
+  function studentTabs(active) {
+    const tabs = [["student-home","Início"],["catalog","Psicólogos"],["appointments","Minhas consultas"],["notifications","Avisos"]];
+    return `<div class="tabs">${tabs.map(([view,label]) => button(label,"go",{view},`btn small ${active === view ? "" : "secondary"}`)).join("")}</div>`;
+  }
+  views["student-home"] = () => {
+    const upcoming = state.bookings.filter((booking) => booking.owner === "me" && booking.status === "confirmada");
+    const unread = state.notifications.filter((item) => !item.read).length;
+    return `<section class="page"><header class="page-head"><p class="eyebrow">Área do aluno</p><h1 style="font-size:2.2rem">Olá, ${escapeHTML(state.name.split(" ")[0])}.</h1><p class="muted">Acompanhe suas consultas e avisos.</p></header>${studentTabs("student-home")}
+      <div class="grid2"><article class="card stack"><h3>Próximas consultas</h3>${upcoming.length ? upcoming.slice(0,3).map(bookingLine).join("") : '<p class="muted">Você ainda não tem consultas agendadas.</p>'}${button("Buscar psicólogo","go",{view:"catalog"})}</article>
+      <article class="card stack"><h3>Avisos</h3><p class="muted">${unread ? `${unread} aviso(s) não lido(s).` : "Nenhum aviso novo."}</p>${button("Ver avisos","go",{view:"notifications"},"btn secondary")}</article></div></section>`;
+  };
+
+  function filteredProfessionals() {
+    const filters = state.filters;
+    return professionals.filter((person) =>
+      (!filters.mode || person.modes.includes(filters.mode)) &&
+      (!filters.area || person.areas.includes(filters.area)) &&
+      (!filters.period || availableSlots(person,filters.period).length > 0)
+    );
+  }
+  function professionalCard(person) {
+    const slots = availableSlots(person,state.filters.period).slice(0,3);
+    return `<article class="card professional">${avatar(person)}<div>
+      <div class="row" style="justify-content:space-between"><h3>${person.title} ${person.name}</h3><span class="pill free">Consulta grátis</span></div>
+      <p class="small muted">${person.crp} · ${person.training}</p>
+      <div class="meta">${person.areas.map((area) => `<span class="chip">${escapeHTML(area)}</span>`).join("")}</div>
+      <p class="small" style="margin-top:9px">${person.modes.map((mode) => modeLabel(mode)).join(" e ")}${person.location ? " · "+person.location : ""} · <strong>R$ 0,00</strong></p>
+      <div class="slots">${slots.length ? slots.map((slot) => button(`${dateLabel(slot.date)} · ${slot.time}`,"pick",{professional:person.id,date:slot.date,time:slot.time},"slot")).join("") : '<span class="hint">Sem horários livres no período selecionado.</span>'}</div>
+      <div style="margin-top:12px">${button("Ver perfil e agenda","profile",{professional:person.id},"btn secondary small")}</div>
+    </div></article>`;
+  }
+  views.catalog = () => `<section class="page"><header class="page-head"><p class="eyebrow">Catálogo</p><h1 style="font-size:2.2rem">Psicólogos disponíveis</h1><p class="muted">Todas as consultas deste protótipo são gratuitas. Os perfis e registros abaixo são fictícios.</p></header>${state.role === "aluno" ? studentTabs("catalog") : ""}
+    <div class="card filters">
+      <div class="field"><label for="filterMode">Modalidade</label><select id="filterMode"><option value="">Todas</option><option value="online">On-line</option><option value="presencial">Presencial</option></select></div>
+      <div class="field"><label for="filterPeriod">Período</label><select id="filterPeriod"><option value="">Qualquer período</option><option value="manha">Manhã</option><option value="tarde">Tarde</option><option value="noite">Noite</option></select></div>
+      <div class="field"><label for="filterArea">Tema</label><select id="filterArea"><option value="">Todos os temas</option>${areas.map((area) => `<option>${area}</option>`).join("")}</select></div>
+    </div>
+    <p class="small muted" id="resultCount" aria-live="polite"></p><div class="stack" id="professionalList"></div></section>`;
+
+  views.profile = () => {
+    const person = professionalById(state.selectedProfessional);
+    if (!person) return views.catalog();
+    const schedule = dates.filter((date) => person.days.includes(date.getDay())).map((date) => {
+      const iso = dateISO(date);
+      return `<div class="day"><h4>${dateLabel(iso)}</h4><div class="stack">${person.times.map((time) => {
+        const free = isFree(person.id,iso,time);
+        const selected = state.selectedSlot && state.selectedSlot.date === iso && state.selectedSlot.time === time;
+        return free ? button(time,"select-slot",{date:iso,time},"slot "+(selected ? "selected" : "")) : `<span class="slot unavailable" aria-label="${time} indisponível">${time} · indisponível</span>`;
+      }).join("")}</div></div>`;
+    }).join("");
+    const selected = state.selectedSlot;
+    const summary = state.bookingMessage
+      ? `<div class="notice good"><strong>${escapeHTML(state.bookingMessage)}</strong><p style="margin-top:10px">${button("Ver minhas consultas","go",{view:"appointments"},"btn small")}</p></div>`
+      : selected
+        ? `<h3>Resumo do agendamento</h3><dl class="stack" style="margin:12px 0"><div><span class="muted">Profissional</span><br><strong>${person.title} ${person.name}</strong></div><div><span class="muted">Data e horário</span><br><strong>${dateLabel(selected.date)} · ${selected.time}</strong></div><div><span class="muted">Modalidade</span><br><strong>${modeLabel(person.modes[0])}</strong></div><div><span class="muted">Valor</span><br><strong>Gratuito — R$ 0,00</strong></div></dl>${button("Confirmar consulta gratuita","confirm-booking",{},"btn")}${button("Escolher outro horário","clear-slot",{},"btn secondary")}`
+        : `<h3>Agendamento gratuito</h3><p class="muted" style="margin-top:8px">Selecione um horário disponível na agenda.</p>`;
+    return `<section class="page">${button("← Voltar ao catálogo","go",{view:"catalog"},"btn secondary small")}
+      <div class="layout"><div class="stack">
+        <article class="card professional">${avatar(person,true)}<div><span class="pill free">Consulta gratuita</span><h1 style="font-size:1.9rem;margin-top:8px">${person.title} ${person.name}</h1><p class="small muted">${person.crp} — registro demonstrativo</p><p style="margin-top:10px">${person.bio}</p></div></article>
+        <article class="card"><h3>Informações profissionais</h3><p style="margin-top:10px"><strong>Formação:</strong> ${person.training}</p><p><strong>Áreas:</strong> ${person.areas.join(", ")}</p><p><strong>Modalidade:</strong> ${person.modes.map(modeLabel).join(" e ")}</p>${person.location ? `<p><strong>Local:</strong> ${person.location}</p>` : ""}<p><strong>Valor:</strong> Gratuito — R$ 0,00</p></article>
+        <article class="card stack"><h3>Agenda da próxima semana</h3><div class="days">${schedule}</div><p class="hint">Horários indisponíveis não podem ser selecionados.</p></article>
+      </div><aside class="card summary stack">${summary}</aside></div></section>`;
+  };
+
+  function myBookings() {
+    return state.bookings.filter((booking) => booking.owner === "me")
+      .sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  }
+  function bookingLine(booking) {
+    const person = professionalById(booking.professionalId);
+    return `<div class="list-item"><div><strong>${person.title} ${person.name}</strong><p class="small muted">${dateLabel(booking.date)} · ${booking.time} · ${modeLabel(booking.mode)}</p><span class="pill free">Gratuita</span></div><span>${booking.status}</span></div>`;
+  }
+  views.appointments = () => {
+    const bookings = myBookings();
+    return `<section class="page"><header class="page-head"><p class="eyebrow">Consultas</p><h1 style="font-size:2.2rem">Minhas consultas</h1></header>${studentTabs("appointments")}
+      ${bookings.length ? `<div class="list">${bookings.map((booking) => {
+        const person = professionalById(booking.professionalId);
+        return `<div class="list-item"><div><strong>${person.title} ${person.name}</strong><p class="small muted">${dateLabel(booking.date)} · ${booking.time} · ${modeLabel(booking.mode)}</p><span class="pill free">Gratuita</span></div><div class="actions"><span>${booking.status}</span>${booking.status === "confirmada" ? button("Cancelar","cancel-booking",{id:booking.id},"btn danger small") : ""}</div></div>`;
+      }).join("")}</div>` : `<div class="card stack"><p class="muted">Você ainda não tem consultas agendadas.</p>${button("Buscar psicólogo","go",{view:"catalog"})}</div>`}</section>`;
+  };
+  views.notifications = () => `<section class="page"><header class="page-head"><p class="eyebrow">Avisos</p><h1 style="font-size:2.2rem">Notificações</h1></header>${studentTabs("notifications")}<div class="list">${state.notifications.map((item) => `<div class="list-item">${escapeHTML(item.text)}</div>`).join("")}</div>${button("Marcar avisos como lidos","read-notifications",{},"btn secondary")}</section>`;
+
+  views["psych-home"] = () => {
+    const bookings = state.bookings.filter((booking) => booking.professionalId === 1 && booking.status === "confirmada");
+    return `<section class="page"><header class="page-head"><p class="eyebrow">Área do psicólogo</p><h1 style="font-size:2.2rem">Resumo profissional</h1><p class="muted">Perfil de demonstração da Dra. Marina Teixeira.</p></header><div class="kpis"><div class="card kpi"><b>${bookings.length}</b><span class="muted">horários reservados</span></div><div class="card kpi"><b>${state.blocked.size}</b><span class="muted">bloqueios na agenda</span></div></div><div class="card stack"><h3>Próximos horários</h3>${bookings.length ? bookings.map(bookingLine).join("") : '<p class="muted">Nenhum horário reservado.</p>'}${button("Gerenciar agenda","go",{view:"psych-agenda"})}</div></section>`;
+  };
+  views["psych-agenda"] = () => {
+    const person = professionalById(1);
+    const schedule = dates.filter((date) => person.days.includes(date.getDay())).map((date) => {
+      const iso = dateISO(date);
+      return `<div class="day"><h4>${dateLabel(iso)}</h4><div class="stack">${person.times.map((time) => {
+        const key = slotKey(person.id,iso,time);
+        const reserved = isTaken(person.id,iso,time);
+        const blocked = state.blocked.has(key);
+        return reserved ? `<span class="slot unavailable">${time} · reservado</span>` : button(`${time}${blocked ? " · bloqueado" : ""}`,"toggle-block",{date:iso,time},"slot "+(blocked ? "selected" : ""));
+      }).join("")}</div></div>`;
+    }).join("");
+    return `<section class="page"><header class="page-head"><p class="eyebrow">Agenda profissional</p><h1 style="font-size:2.2rem">Disponibilidade</h1><p class="muted">Clique em um horário para bloquear ou liberar. Esta agenda é apenas demonstrativa.</p></header><article class="card"><div class="days">${schedule}</div></article></section>`;
+  };
+
+  views.admin = () => `<section class="page"><header class="page-head"><p class="eyebrow">Painel administrativo</p><h1 style="font-size:2.2rem">Visão geral</h1><p class="muted">Os dados exibidos são exemplos e não representam uma operação real.</p></header>
+    <div class="kpis"><div class="card kpi"><b>128</b><span class="muted">usuários fictícios</span></div><div class="card kpi"><b>${professionals.length}</b><span class="muted">perfis de exemplo</span></div><div class="card kpi"><b>${state.bookings.filter((b) => b.status === "confirmada").length}</b><span class="muted">reservas demonstrativas</span></div></div>
+    <article class="card stack"><h3>Cadastros profissionais aguardando análise</h3>${state.pending.length ? `<div class="list">${state.pending.map((item,index) => `<div class="list-item"><div><strong>${escapeHTML(item.name)}</strong><p class="small muted">${escapeHTML(item.crp)} · Enviado em ${item.date}</p></div><div class="actions">${button("Aprovar","review",{index,decision:"aprovado"},"btn small")}${button("Recusar","review",{index,decision:"recusado"},"btn danger small")}</div></div>`).join("")}</div>` : '<p class="muted">Nenhum cadastro pendente.</p>'}</article>
+    <article class="card stack"><h3>Registro de ações</h3>${state.audit.length ? state.audit.slice().reverse().map((entry) => `<p class="small">${escapeHTML(entry)}</p>`).join("") : '<p class="muted">Nenhuma ação nesta sessão.</p>'}</article></section>`;
+
+  const infoContent = {
+    faq: [["Preciso pagar para me cadastrar?","Não. O cadastro é gratuito. Neste protótipo, todas as consultas também são gratuitas."],["O Helpsy atende emergências?","Não. Em uma emergência, procure ajuda presencial e acione os serviços de emergência adequados."],["A assistente virtual é psicóloga?","Não. Ela ajuda com navegação e agendamento, mas não faz diagnóstico nem indica tratamento."],["Os profissionais são reais?","Não. Os perfis deste protótipo são fictícios e não representam registros profissionais reais."]],
+    privacidade: [["Dados pessoais","Um sistema real deve explicar quais dados coleta, para que os usa e por quanto tempo os guarda."],["Informações sensíveis","Informações sobre saúde exigem proteção reforçada, controles de acesso e tratamento conforme a LGPD."],["Protótipo","Este arquivo funciona localmente no navegador. Não possui banco de dados, login seguro ou envio real de informações."]],
+    termos: [["Objetivo","O Helpsy foi pensado para facilitar a busca e o agendamento de consultas psicológicas gratuitas para estudantes."],["Disponibilidade","Para oferecer consultas reais, o projeto precisará de parcerias, profissionais habilitados e confirmação de horários no servidor."],["Aviso","Os perfis, registros e horários são dados fictícios usados apenas para demonstração."]]
+  };
+  views.info = () => `<section class="page" style="max-width:760px;margin:auto"><header class="page-head"><h1 style="font-size:2.2rem">Informações</h1></header><div class="tabs">${[["faq","Perguntas frequentes"],["privacidade","Privacidade"],["termos","Termos de uso"]].map(([tab,label]) => button(label,"info",{tab},"btn secondary small")).join("")}</div><article class="card stack">${(infoContent[state.infoTab || "faq"]).map(([question,answer]) => `<details><summary>${question}</summary><p class="muted" style="margin-top:8px">${answer}</p></details>`).join("")}</article></section>`;
+
+  function renderCatalog() {
+    const list = filteredProfessionals();
+    $("#resultCount").textContent = `${list.length} profissional(is) encontrado(s)`;
+    $("#professionalList").innerHTML = list.length ? list.map(professionalCard).join("") : '<div class="card">Nenhum profissional com esses filtros. Tente outra modalidade, período ou tema.</div>';
+    $("#filterMode").value = state.filters.mode;
+    $("#filterPeriod").value = state.filters.period;
+    $("#filterArea").value = state.filters.area;
+  }
+  function render() {
+    $("#app").innerHTML = (views[state.view] || views.home)();
+    $("#mainNav").innerHTML = navItems().map(([view,label]) =>
+      `<button data-action="go" data-view="${view}" ${state.view === view ? 'aria-current="page"' : ""}>${label}</button>`
+    ).join("");
+    roleTabs();
+    if (state.view === "catalog") renderCatalog();
+    renderChat();
+  }
+  function toast(message) {
+    $("#toastRoot").innerHTML = `<div class="toast" role="status">${escapeHTML(message)}</div>`;
+    window.setTimeout(() => { $("#toastRoot").innerHTML = ""; }, 3000);
+  }
+  function go(view) {
+    state.view = view;
+    if (view !== "profile") { state.selectedSlot = null; state.bookingMessage = ""; }
+    window.scrollTo(0,0); render();
+  }
+  function setRole(role) {
+    state.role = role || null;
+    if (role === "aluno") go("student-home");
+    else if (role === "psi") go("psych-home");
+    else if (role === "admin") go("admin");
+    else go("home");
+  }
+
+  // Assistente de navegação: respostas simples por palavras-chave; não é uma IA clínica.
+  function addMessage(text, mine = false) { state.messages.push({text,mine}); }
+  function normalize(text) { return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,""); }
+  function assistantReply(raw) {
+    const text = normalize(raw);
+    if (/suicid|me matar|quero morrer|nao quero viver|me machucar|automutil|me cortar/.test(text)) {
+      addMessage("Sinto muito que você esteja passando por isso. Procure agora um adulto de confiança que possa ficar com você. No Brasil, você também pode ligar gratuitamente para o CVV no 188. Se houver perigo imediato, ligue para o SAMU no 192 ou vá a um pronto atendimento.");
+      return;
+    }
+    if (/diagnost|tenho depress|tenho ansiedade|remedio|medicacao|tratamento/.test(text)) {
+      addMessage("Não faço diagnóstico nem indico tratamento. Posso ajudar a encontrar um profissional para você conversar. Você prefere atendimento on-line ou presencial?");
+      return;
+    }
+    if (/cancel|remarc/.test(text)) {
+      addMessage("Abra “Minhas consultas” e use o botão “Cancelar” ao lado da consulta confirmada. Este protótipo não envia avisos reais.");
+      return;
+    }
+    const mode = /online|remoto|video|casa/.test(text) ? "online" : /presencial|consultorio/.test(text) ? "presencial" : "";
+    const period = /manha|cedo/.test(text) ? "manha" : /tarde/.test(text) ? "tarde" : /noite|noturno/.test(text) ? "noite" : "";
+    const area = areas.find((item) => text.includes(normalize(item)));
+    const matches = professionals.filter((person) =>
+      (!mode || person.modes.includes(mode)) && (!area || person.areas.includes(area)) &&
+      (!period || availableSlots(person,period).length > 0)
+    ).slice(0,3);
+    if (!matches.length) {
+      addMessage("Posso buscar por modalidade, período ou tema. Experimente: “on-line à noite” ou “ansiedade”.");
+      return;
+    }
+    addMessage("Encontrei estas opções gratuitas: " + matches.map((person) =>
+      `${person.title} ${person.name} (${person.modes.map(modeLabel).join("/")})`
+    ).join("; ") + ". Abra “Psicólogos” para ver os horários e agendar.");
+  }
+  function renderChat() {
+    const root = $("#chatRoot");
+    if (!state.chatOpen) {
+      root.innerHTML = `<div class="fab">${button("Assistente Helpsy","chat-open",{},"btn sun")}</div>`;
+      return;
+    }
+    if (!state.messages.length) addMessage("Oi! Sou a assistente virtual do Helpsy. Posso orientar você na busca por profissionais e horários. Não faço diagnóstico. Como posso ajudar?");
+    root.innerHTML = `<section class="chat" aria-label="Assistente virtual"><header class="chat-head"><strong>Assistente Helpsy</strong>${button("Fechar","chat-close",{},"btn secondary small")}</header>
+      <div class="messages" id="chatMessages" aria-live="polite">${state.messages.map((message) => `<div class="message ${message.mine ? "me" : ""}">${escapeHTML(message.text)}</div>`).join("")}</div>
+      <form id="chatForm"><input id="chatInput" aria-label="Sua mensagem" placeholder="Ex.: ansiedade, on-line à noite" autocomplete="off" required><button class="btn small" type="submit">Enviar</button></form></section>`;
+    $("#chatMessages").scrollTop = $("#chatMessages").scrollHeight;
+    $("#chatInput").focus();
+  }
+
+  document.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-action]");
+    if (!target) return;
+    const { action, ...data } = target.dataset;
+
+    if (action === "go") go(data.view);
+    else if (action === "role") setRole(data.role);
+    else if (action === "info") { state.infoTab = data.tab; go("info"); }
+    else if (action === "profile") {
+      state.selectedProfessional = Number(data.professional); state.selectedSlot = null; state.bookingMessage = ""; go("profile");
+    } else if (action === "pick") {
+      state.selectedProfessional = Number(data.professional); state.selectedSlot = {date:data.date,time:data.time}; state.bookingMessage = "";
+      if (!state.role) state.role = "aluno";
+      go("profile");
+    } else if (action === "select-slot") {
+      state.selectedSlot = {date:data.date,time:data.time}; state.bookingMessage = ""; render();
+    } else if (action === "clear-slot") {
+      state.selectedSlot = null; render();
+    } else if (action === "confirm-booking") {
+      if (state.role !== "aluno") {
+        toast("Entre no modo Aluno para confirmar a reserva.");
+        return;
+      }
+      if (!state.selectedSlot) return;
+      const person = professionalById(state.selectedProfessional);
+      const result = reserveSlot(person.id,state.selectedSlot.date,state.selectedSlot.time,person.modes[0]);
+      state.bookingMessage = result.ok
+        ? `Consulta gratuita confirmada com ${person.title} ${person.name}, ${dateLabel(result.booking.date)} às ${result.booking.time}.`
+        : result.message;
+      state.selectedSlot = null; render();
+    } else if (action === "cancel-booking") {
+      const booking = state.bookings.find((item) => item.id === data.id && item.owner === "me");
+      if (booking && booking.status === "confirmada") {
+        booking.status = "cancelada"; addNotification(`Sua consulta de ${dateLabel(booking.date)} às ${booking.time} foi cancelada.`);
+        toast("Consulta cancelada."); render();
+      }
+    } else if (action === "read-notifications") {
+      state.notifications.forEach((item) => { item.read = true; }); toast("Avisos marcados como lidos."); render();
+    } else if (action === "toggle-block") {
+      const key = slotKey(1,data.date,data.time);
+      if (state.blocked.has(key)) state.blocked.delete(key); else state.blocked.add(key);
+      render();
+    } else if (action === "review") {
+      const item = state.pending.splice(Number(data.index),1)[0];
+      if (item) { state.audit.push(`Cadastro de ${item.name} ${data.decision}.`); toast(`Cadastro ${data.decision}.`); render(); }
+    } else if (action === "chat-open") { state.chatOpen = true; renderChat(); }
+    else if (action === "chat-close") { state.chatOpen = false; renderChat(); }
+  });
+
+  document.addEventListener("change", (event) => {
+    const filters = {filterMode:"mode",filterPeriod:"period",filterArea:"area"};
+    if (filters[event.target.id]) {
+      state.filters[filters[event.target.id]] = event.target.value;
+      renderCatalog();
+    }
+  });
+
+  document.addEventListener("submit", (event) => {
+    if (event.target.id === "studentForm") {
+      event.preventDefault();
+      const name = $("#studentName").value.trim();
+      const email = $("#studentEmail").value.trim();
+      const password = $("#studentPassword").value;
+      const error = $("#studentError");
+      if (!name || !email.includes("@") || password.length < 8 || !$("#studentTerms").checked) {
+        error.hidden = false;
+        error.textContent = "Confira o nome, o e-mail, a senha com pelo menos 8 caracteres e o aceite dos termos.";
+        return;
+      }
+      state.name = name; state.role = "aluno";
+      addNotification("Cadastro demonstrativo criado. Nenhum e-mail foi enviado.");
+      toast("Cadastro demonstrativo concluído."); go("student-home");
+    } else if (event.target.id === "psychForm") {
+      event.preventDefault();
+      const name = $("#psychName").value.trim();
+      const crp = $("#psychCrp").value.trim();
+      const email = $("#psychEmail").value.trim();
+      const training = $("#psychTraining").value.trim();
+      if (!name || !crp || !email.includes("@") || !training) {
+        $("#psychError").hidden = false; $("#psychError").textContent = "Preencha nome, CRP, e-mail válido e formação."; return;
+      }
+      state.pending.push({name,crp,date:new Date().toLocaleDateString("pt-BR")});
+      toast("Cadastro enviado para análise demonstrativa."); go("home");
+    } else if (event.target.id === "chatForm") {
+      event.preventDefault();
+      const input = $("#chatInput");
+      const message = input.value.trim();
+      if (!message) return;
+      addMessage(message,true); assistantReply(message); renderChat();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
